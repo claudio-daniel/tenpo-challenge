@@ -2,14 +2,14 @@ version: '2'
 
 services:
   app:
-    image: 'tenpo/challenge:latest'
+    image: 'tenpo-challenge:latest'
     build:
       context: .
     container_name: app
     depends_on:
       - db
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/tenpo_challenge
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/tenpo_challenge_data
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -20,3 +20,5 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=tenpo_challenge_data
+
