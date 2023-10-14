@@ -12,7 +12,7 @@
 	<artifactId>rest.api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>rest.api</name>
-	<description>Api rest with sprinboot and java 21 for Tenpo Challenge</description>
+	<description>Api rest with Spring Boot and java 21 for Tenpo Challenge</description>
 	<properties>
 		<java.version>21</java.version>
 	</properties>
