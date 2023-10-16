@@ -14,7 +14,7 @@ import java.util.Optional;
 
 import static cl.tenpo.rest.api.mock.value.CalculateValueRequestMock.mockCalculateValueRequest;
 import static cl.tenpo.rest.api.mock.value.PercentageMock.mockPercentageResponse;
-import static cl.tenpo.rest.api.mock.value.PercentageMock.mockPercentageValueHistory;
+import static cl.tenpo.rest.api.mock.value.PercentageMock.mockLastPercentageReceived;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -49,8 +49,8 @@ public class ValuesServiceImplTest {
     }
 
     @Test
-    void whenExistDataInCacheThenReturnResponseFromCache() {
-        when(percentageHistoryService.findLastPercentageReceived()).thenReturn(Optional.of(mockPercentageValueHistory()));
+    void whenExistDataInCacheThenReturnFromCache() {
+        when(percentageHistoryService.findLastPercentageReceived()).thenReturn(Optional.of(mockLastPercentageReceived()));
 
         var calculatedValueResponse = valuesService.sumAndApplyPercentage(mockCalculateValueRequest());
 
@@ -60,12 +60,29 @@ public class ValuesServiceImplTest {
     }
 
     @Test
-    void whenExternalServiceFailThenReturnInternalServerError() {
+    void whenExternalServiceFailAndThereIsNoDataCacheThenThrowException() {
         when(percentageHistoryService.findLastPercentageReceived()).thenReturn(Optional.empty());
+        when(percentageHistoryService.findLastPercentageReturned()).thenReturn(Optional.empty());
         when(externalServiceClient.getPercentageFromWebClient()).thenThrow(ResourceAccessException.class);
 
-        assertThrows(ResourceAccessException.class, () -> valuesService.sumAndApplyPercentage(mockCalculateValueRequest()));
+        assertThrows(RuntimeException.class, () -> valuesService.sumAndApplyPercentage(mockCalculateValueRequest()));
         verify(externalServiceClient, times(1)).getPercentageFromWebClient();
         verify(percentageHistoryService, times(1)).findLastPercentageReceived();
+        verify(percentageHistoryService, times(1)).findLastPercentageReturned();
+
+    }
+
+    @Test
+    void whenExternalServiceFailAndThereIsDataCacheThenReturnFromCache() {
+        when(percentageHistoryService.findLastPercentageReceived()).thenReturn(Optional.empty());
+        when(percentageHistoryService.findLastPercentageReturned()).thenReturn(Optional.of(mockLastPercentageReceived()));
+        when(externalServiceClient.getPercentageFromWebClient()).thenThrow(ResourceAccessException.class);
+
+        var calculatedValueResponse = valuesService.sumAndApplyPercentage(mockCalculateValueRequest());
+
+        assertNotNull(calculatedValueResponse);
+        verify(externalServiceClient, times(1)).getPercentageFromWebClient();
+        verify(percentageHistoryService, times(1)).findLastPercentageReceived();
+        verify(percentageHistoryService, times(1)).findLastPercentageReturned();
     }
 }

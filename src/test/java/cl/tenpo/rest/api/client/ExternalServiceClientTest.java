@@ -6,8 +6,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -36,6 +38,9 @@ public class ExternalServiceClientTest {
     @Mock
     private RestTemplate restTemplate;
 
+    @Spy
+    private RetryTemplate retryTemplate;
+
     @InjectMocks
     private ExternalServiceClient externalServiceClient;
 
@@ -57,10 +62,10 @@ public class ExternalServiceClientTest {
     }
 
     @Test
-    void whenWebClientReturnsErrorThenThrowException() {
+    void whenWebClientReturnsErrorThenRetryOrThrowException() {
         when(restTemplate.getForEntity(uri, PercentageResponse.class)).thenThrow(ResourceAccessException.class);
 
         assertThrows(RuntimeException.class, () -> externalServiceClient.getPercentageFromWebClient());
-        verify(restTemplate, times(1)).getForEntity(uri, PercentageResponse.class);
+        verify(restTemplate, times(3)).getForEntity(uri, PercentageResponse.class);
     }
 }

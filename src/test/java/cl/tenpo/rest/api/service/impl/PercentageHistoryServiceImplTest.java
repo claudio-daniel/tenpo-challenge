@@ -10,7 +10,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static cl.tenpo.rest.api.mock.value.PercentageMock.mockPercentageValueHistory;
+import static cl.tenpo.rest.api.mock.value.PercentageMock.mockLastPercentageReceived;
+import static cl.tenpo.rest.api.mock.value.PercentageMock.mockLastPercentageReturned;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -31,7 +32,7 @@ public class PercentageHistoryServiceImplTest {
 
     @Test
     void whenLastPercentageExistsThenReturnPercentageValue() {
-        when(percentageHistoryRepository.findById(lastPercentageKey)).thenReturn(Optional.of(mockPercentageValueHistory()));
+        when(percentageHistoryRepository.findById(lastPercentageKey)).thenReturn(Optional.of(mockLastPercentageReceived()));
 
         var lastPercentage = percentageHistoryService.findLastPercentageReceived();
 
@@ -56,21 +57,26 @@ public class PercentageHistoryServiceImplTest {
 
     @Test
     void whenSaveFinishesOkThenDoNothing() {
-        var percentageValueHistoryMock = mockPercentageValueHistory();
-        when(percentageHistoryRepository.save(percentageValueHistoryMock)).thenReturn(percentageValueHistoryMock);
+        var lastPercentageReceived = mockLastPercentageReceived();
+        var lastPercentageReturned = mockLastPercentageReturned();
 
-        percentageHistoryService.save(percentageValueHistoryMock.getPercentageValue());
+        when(percentageHistoryRepository.save(lastPercentageReceived)).thenReturn(lastPercentageReceived);
+        when(percentageHistoryRepository.save(lastPercentageReturned)).thenReturn(lastPercentageReturned);
 
-        verify(percentageHistoryRepository, times(1)).save(percentageValueHistoryMock);
+        percentageHistoryService.savePercentageHistory(lastPercentageReceived.getPercentageValue());
+
+        verify(percentageHistoryRepository, times(1)).save(lastPercentageReceived);
+        verify(percentageHistoryRepository, times(1)).save(lastPercentageReturned);
+
     }
 
     @Test
     void whenSaveDoesNotFinishesThenThrowException() {
-        var percentageValueHistoryMock = mockPercentageValueHistory();
-        when(percentageHistoryRepository.save(percentageValueHistoryMock)).thenThrow(RuntimeException.class);
+        var lastPercentageReceived = mockLastPercentageReceived();
+        when(percentageHistoryRepository.save(lastPercentageReceived)).thenThrow(RuntimeException.class);
 
-        assertThrows(RuntimeException.class, () -> percentageHistoryService.save(percentageValueHistoryMock.getPercentageValue()));
+        assertThrows(RuntimeException.class, () -> percentageHistoryService.savePercentageHistory(lastPercentageReceived.getPercentageValue()));
 
-        verify(percentageHistoryRepository, times(1)).save(percentageValueHistoryMock);
+        verify(percentageHistoryRepository, times(1)).save(lastPercentageReceived);
     }
 }
