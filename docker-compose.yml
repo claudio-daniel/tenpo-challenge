@@ -15,6 +15,8 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - EXTERNAL_SERVICE_URL=http://percentage-ms:8080
       - EXTERNAL_SERVICE_URN=/percentage
+      - SPRING_APPLICATION_CONNECTION_TIME_OUT=60
+      - SPRING_APPLICATION_READ_TIME_OUT=60
     ports:
       - '9009:9009'
 
