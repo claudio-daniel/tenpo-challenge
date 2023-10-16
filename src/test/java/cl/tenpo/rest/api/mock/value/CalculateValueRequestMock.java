@@ -18,4 +18,12 @@ public class CalculateValueRequestMock {
                 }
                 """;
     }
+
+    public static String mockBadCalculateValueRequestJson() {
+        return """
+                {
+                    "first_value": "12"
+                }
+                """;
+    }
 }

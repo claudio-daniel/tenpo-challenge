@@ -1,6 +1,8 @@
 package cl.tenpo.rest.api.service.impl;
 
 import cl.tenpo.rest.api.client.ExternalServiceClient;
+import cl.tenpo.rest.api.model.exception.ClientResourceAccessException;
+import cl.tenpo.rest.api.model.exception.ClientServerException;
 import cl.tenpo.rest.api.service.PercentageHistoryService;
 import cl.tenpo.rest.api.service.ValuesService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.ResourceAccessException;
 
 import java.util.Optional;
 
@@ -63,9 +64,9 @@ public class ValuesServiceImplTest {
     void whenExternalServiceFailAndThereIsNoDataCacheThenThrowException() {
         when(percentageHistoryService.findLastPercentageReceived()).thenReturn(Optional.empty());
         when(percentageHistoryService.findLastPercentageReturned()).thenReturn(Optional.empty());
-        when(externalServiceClient.getPercentageFromWebClient()).thenThrow(ResourceAccessException.class);
+        when(externalServiceClient.getPercentageFromWebClient()).thenThrow(ClientResourceAccessException.class);
 
-        assertThrows(RuntimeException.class, () -> valuesService.sumAndApplyPercentage(mockCalculateValueRequest()));
+        assertThrows(ClientResourceAccessException.class, () -> valuesService.sumAndApplyPercentage(mockCalculateValueRequest()));
         verify(externalServiceClient, times(1)).getPercentageFromWebClient();
         verify(percentageHistoryService, times(1)).findLastPercentageReceived();
         verify(percentageHistoryService, times(1)).findLastPercentageReturned();
@@ -76,7 +77,7 @@ public class ValuesServiceImplTest {
     void whenExternalServiceFailAndThereIsDataCacheThenReturnFromCache() {
         when(percentageHistoryService.findLastPercentageReceived()).thenReturn(Optional.empty());
         when(percentageHistoryService.findLastPercentageReturned()).thenReturn(Optional.of(mockLastPercentageReceived()));
-        when(externalServiceClient.getPercentageFromWebClient()).thenThrow(ResourceAccessException.class);
+        when(externalServiceClient.getPercentageFromWebClient()).thenThrow(ClientServerException.class);
 
         var calculatedValueResponse = valuesService.sumAndApplyPercentage(mockCalculateValueRequest());
 

@@ -2,6 +2,7 @@ package cl.tenpo.rest.api.service.impl;
 
 import cl.tenpo.rest.api.client.ExternalServiceClient;
 import cl.tenpo.rest.api.model.entity.PercentageValueHistory;
+import cl.tenpo.rest.api.model.exception.ClientException;
 import cl.tenpo.rest.api.model.request.CalculateValueRequest;
 import cl.tenpo.rest.api.model.response.CalculatedValueResponse;
 import cl.tenpo.rest.api.service.PercentageHistoryService;
@@ -41,10 +42,10 @@ public class ValuesServiceImpl implements ValuesService {
             return percentageHistoryRepository.findLastPercentageReceived()
                     .map(PercentageValueHistory::getPercentageValue)
                     .orElseGet(this::getPercentageFromWebClient);
-        } catch (Exception e) {
+        } catch (ClientException clientException) {
             return percentageHistoryRepository.findLastPercentageReturned()
                     .map(PercentageValueHistory::getPercentageValue)
-                    .orElseThrow(RuntimeException::new);
+                    .orElseThrow(() -> clientException);
         }
     }
 

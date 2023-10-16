@@ -1,6 +1,8 @@
 package cl.tenpo.rest.api.client;
 
 import cl.tenpo.rest.api.client.model.response.PercentageResponse;
+import cl.tenpo.rest.api.model.exception.ClientResourceAccessException;
+import cl.tenpo.rest.api.model.exception.ClientServerException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -58,14 +60,21 @@ public class ExternalServiceClientTest {
 
         assertTrue(Objects.nonNull(percentageFromWebClient));
         verify(restTemplate, times(1)).getForEntity(uri, PercentageResponse.class);
+    }
 
+    @Test
+    void whenWebClientDoesNotResponseThenRetryOrThrowException() {
+        when(restTemplate.getForEntity(uri, PercentageResponse.class)).thenThrow(ResourceAccessException.class);
+
+        assertThrows(ClientResourceAccessException.class, () -> externalServiceClient.getPercentageFromWebClient());
+        verify(restTemplate, times(3)).getForEntity(uri, PercentageResponse.class);
     }
 
     @Test
     void whenWebClientReturnsErrorThenRetryOrThrowException() {
-        when(restTemplate.getForEntity(uri, PercentageResponse.class)).thenThrow(ResourceAccessException.class);
+        when(restTemplate.getForEntity(uri, PercentageResponse.class)).thenThrow(RuntimeException.class);
 
-        assertThrows(RuntimeException.class, () -> externalServiceClient.getPercentageFromWebClient());
+        assertThrows(ClientServerException.class, () -> externalServiceClient.getPercentageFromWebClient());
         verify(restTemplate, times(3)).getForEntity(uri, PercentageResponse.class);
     }
 }
