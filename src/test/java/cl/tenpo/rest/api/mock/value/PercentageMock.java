@@ -10,10 +10,19 @@ public class PercentageMock {
                 .build();
     }
 
-    public static PercentageValueHistory mockPercentageValueHistory() {
+    public static PercentageValueHistory mockLastPercentageReceived() {
         return PercentageValueHistory.builder()
                 .id("last-percentage-received")
                 .percentageValue(10)
+                .ttl(18000)
+                .build();
+    }
+
+    public static PercentageValueHistory mockLastPercentageReturned() {
+        return PercentageValueHistory.builder()
+                .id("last-percentage-returned")
+                .percentageValue(10)
+                .ttl(-1)
                 .build();
     }
 }

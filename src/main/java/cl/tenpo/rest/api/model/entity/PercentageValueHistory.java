@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
+import org.springframework.data.redis.core.TimeToLive;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -14,13 +15,16 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@RedisHash(value = "LastPercentageReceived", timeToLive = 1800)
+@RedisHash(value = "PercentageValueHistory")
 public class PercentageValueHistory implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     @Id
     private String id;
+
+    @TimeToLive
+    private Integer ttl;
 
     private Integer percentageValue;
 }

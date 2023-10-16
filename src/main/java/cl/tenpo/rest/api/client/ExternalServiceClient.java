@@ -3,6 +3,7 @@ package cl.tenpo.rest.api.client;
 import cl.tenpo.rest.api.client.model.response.PercentageResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -20,9 +21,11 @@ public class ExternalServiceClient {
     private String externalServiceUrn;
 
     private final RestTemplate restTemplate;
+    private final RetryTemplate retryTemplate;
 
-    public ExternalServiceClient(RestTemplate restTemplate) {
+    public ExternalServiceClient(RestTemplate restTemplate, RetryTemplate retryTemplate) {
         this.restTemplate = restTemplate;
+        this.retryTemplate = retryTemplate;
     }
 
     public PercentageResponse getPercentageFromWebClient() {
@@ -31,17 +34,20 @@ public class ExternalServiceClient {
                 .buildAndExpand()
                 .toUri();
 
-        PercentageResponse percentageResponse;
-
         log.info("Get percentage from : " + uri.getHost() + uri.getPath());
-        try {
-            percentageResponse = Objects.requireNonNull(restTemplate.getForEntity(uri, PercentageResponse.class).getBody());
-        } catch (Exception e) {
-            var errorMessage = "Generic error when get percentage from web client";
 
-            log.error(errorMessage, e);
-            throw new RuntimeException(errorMessage, e);
-        }
-        return percentageResponse;
+        return retryTemplate.execute(context -> {
+            PercentageResponse percentageResponse;
+
+            try {
+                percentageResponse = Objects.requireNonNull(restTemplate.getForEntity(uri, PercentageResponse.class).getBody());
+            } catch (Exception e) {
+                var errorMessage = "Generic error when get percentage from web client";
+
+                log.error(errorMessage, e);
+                throw new RuntimeException(errorMessage, e);
+            }
+            return percentageResponse;
+        });
     }
 }

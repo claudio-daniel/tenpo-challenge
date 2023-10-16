@@ -12,11 +12,11 @@ import org.springframework.stereotype.Service;
 public class ValuesServiceImpl implements ValuesService {
 
     private final ExternalServiceClient externalServiceClient;
-    private final PercentageHistoryService percentageHistoryRedisRepository;
+    private final PercentageHistoryService percentageHistoryRepository;
 
     public ValuesServiceImpl(ExternalServiceClient externalServiceClient, PercentageHistoryService percentageHistoryService) {
         this.externalServiceClient = externalServiceClient;
-        this.percentageHistoryRedisRepository = percentageHistoryService;
+        this.percentageHistoryRepository = percentageHistoryService;
     }
 
     @Override
@@ -37,17 +37,21 @@ public class ValuesServiceImpl implements ValuesService {
     }
 
     private Integer findPercentageValue() {
-        var lastPercentageValue = percentageHistoryRedisRepository.findLastPercentageReceived();
-
-        return lastPercentageValue
-                .map(PercentageValueHistory::getPercentageValue)
-                .orElseGet(this::getPercentageFromWebClient);
+        try {
+            return percentageHistoryRepository.findLastPercentageReceived()
+                    .map(PercentageValueHistory::getPercentageValue)
+                    .orElseGet(this::getPercentageFromWebClient);
+        } catch (Exception e) {
+            return percentageHistoryRepository.findLastPercentageReturned()
+                    .map(PercentageValueHistory::getPercentageValue)
+                    .orElseThrow(RuntimeException::new);
+        }
     }
 
     private Integer getPercentageFromWebClient() {
         var percentageResponse = externalServiceClient.getPercentageFromWebClient();
 
-        percentageHistoryRedisRepository.save(percentageResponse.getPercentage());
+        percentageHistoryRepository.savePercentageHistory(percentageResponse.getPercentage());
 
         return percentageResponse.getPercentage();
     }
