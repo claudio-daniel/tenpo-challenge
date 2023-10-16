@@ -17,6 +17,9 @@ services:
       - EXTERNAL_SERVICE_URN=/percentage
       - SPRING_APPLICATION_CONNECTION_TIME_OUT=60
       - SPRING_APPLICATION_READ_TIME_OUT=60
+      - SPRING_DATA_REDIS_HOST=redis
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_DATA_REDIS_TIMEOUT=6000
     ports:
       - '9009:9009'
 
@@ -34,4 +37,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=tenpo_challenge_data
-
+  redis:
+    image: 'bitnami/redis:latest'
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
