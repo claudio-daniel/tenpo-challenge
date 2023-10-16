@@ -1,5 +1,6 @@
 package cl.tenpo.rest.api.controller;
 
+import cl.tenpo.rest.api.model.exception.ClientResourceAccessException;
 import cl.tenpo.rest.api.service.ValuesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -50,7 +51,8 @@ public class ValuesControllerTest {
     void whenCalculateValueIsCalledWithoutBodyShouldBeReturnBadRequest() throws Exception {
 
         this.mvc.perform(post(calculateValueEndpoint)
-                        .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mockBadCalculateValueRequestJson()))
                 .andExpect(status().isBadRequest());
 
         verify(valuesService, times(0)).sumAndApplyPercentage(any());
@@ -58,7 +60,7 @@ public class ValuesControllerTest {
 
     @Test
     void whenCalculateValueServiceFailShouldBeReturnInternalServerError() throws Exception {
-        when(valuesService.sumAndApplyPercentage(mockCalculateValueRequest())).thenThrow(ResourceAccessException.class);
+        when(valuesService.sumAndApplyPercentage(mockCalculateValueRequest())).thenThrow(ClientResourceAccessException.class);
 
         this.mvc.perform(post(calculateValueEndpoint)
                         .contentType(MediaType.APPLICATION_JSON)
