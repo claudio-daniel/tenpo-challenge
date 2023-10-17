@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CalculateValueRequest {
 
-    @NotNull
+    @NotNull(message = "Cannot be null")
     @JsonProperty("first_value")
     private Long firstValue;
 
-    @NotNull
+    @NotNull(message = "Cannot be null")
     @JsonProperty("second_value")
     private Long secondValue;
 }
