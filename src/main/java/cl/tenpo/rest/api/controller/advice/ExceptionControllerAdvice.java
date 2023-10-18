@@ -1,4 +1,4 @@
-package cl.tenpo.rest.api.controller;
+package cl.tenpo.rest.api.controller.advice;
 
 import cl.tenpo.rest.api.model.exception.ClientException;
 import cl.tenpo.rest.api.model.exception.ErrorDetail;
@@ -16,7 +16,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
-public class ExceptionController {
+public class ExceptionControllerAdvice {
 
     @ExceptionHandler({MethodArgumentNotValidException.class})
     public ResponseEntity<ErrorResponse> handleException(MethodArgumentNotValidException exception, WebRequest request) {
