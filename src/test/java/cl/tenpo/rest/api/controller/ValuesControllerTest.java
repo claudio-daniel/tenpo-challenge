@@ -1,6 +1,7 @@
 package cl.tenpo.rest.api.controller;
 
 import cl.tenpo.rest.api.model.exception.ClientResourceAccessException;
+import cl.tenpo.rest.api.service.RequestHistoryService;
 import cl.tenpo.rest.api.service.ValuesService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,7 +13,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.client.ResourceAccessException;
 
 import static cl.tenpo.rest.api.mock.value.CalculateValueResponseMock.mockCalculatedValueResponse;
 import static cl.tenpo.rest.api.mock.value.CalculateValueRequestMock.*;
@@ -30,6 +30,9 @@ public class ValuesControllerTest {
 
     @MockBean
     private ValuesService valuesService;
+
+    @MockBean
+    private RequestHistoryService requestHistoryService;
 
     @Autowired
     private MockMvc mvc;
