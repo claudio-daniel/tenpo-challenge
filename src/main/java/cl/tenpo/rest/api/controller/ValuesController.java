@@ -9,10 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/values")
@@ -34,7 +31,8 @@ public class ValuesController {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public CalculatedValueResponse sumAndApplyPercentage(@Validated @RequestBody CalculateValueRequest tenpoCalculateValueRequest) {
+    public CalculatedValueResponse sumAndApplyPercentage(@RequestHeader(value = "api-key") String apiKey,
+                                                         @Validated @RequestBody CalculateValueRequest tenpoCalculateValueRequest) {
         return valuesService.sumAndApplyPercentage(tenpoCalculateValueRequest);
     }
 }

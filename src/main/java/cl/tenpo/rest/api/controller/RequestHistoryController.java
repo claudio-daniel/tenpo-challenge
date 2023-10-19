@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,7 +33,8 @@ public class RequestHistoryController {
             @ApiResponse(responseCode = "200", description = "Page request history returned ok"),
             @ApiResponse(responseCode = "500", description = "Internal Server Error")
     })
-    public PageResponse<RequestHistoryResponse> getRequestHistoryPaginated(@Validated RequestHistoryParams params) {
+    public PageResponse<RequestHistoryResponse> getRequestHistoryPaginated(@RequestHeader(value = "api-key") String apiKey,
+                                                                           @Validated RequestHistoryParams params) {
         return requestHistoryService.findAllRequestHistory(params);
     }
 }

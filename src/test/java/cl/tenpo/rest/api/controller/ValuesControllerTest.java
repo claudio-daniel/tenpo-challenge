@@ -3,6 +3,7 @@ package cl.tenpo.rest.api.controller;
 import cl.tenpo.rest.api.model.exception.ClientResourceAccessException;
 import cl.tenpo.rest.api.service.RequestHistoryService;
 import cl.tenpo.rest.api.service.ValuesService;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,7 @@ public class ValuesControllerTest {
         when(valuesService.sumAndApplyPercentage(mockCalculateValueRequest())).thenReturn(mockCalculatedValueResponse());
 
         this.mvc.perform(post(calculateValueEndpoint)
+                        .header("api-key", "calculate-value")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mockCalculateValueRequestJson()))
                 .andExpect(status().isOk());
@@ -54,6 +56,7 @@ public class ValuesControllerTest {
     void whenCalculateValueIsCalledWithoutBodyShouldBeReturnBadRequest() throws Exception {
 
         this.mvc.perform(post(calculateValueEndpoint)
+                        .header("api-key", "calculate-value")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mockBadCalculateValueRequestJson()))
                 .andExpect(status().isBadRequest());
@@ -66,10 +69,21 @@ public class ValuesControllerTest {
         when(valuesService.sumAndApplyPercentage(mockCalculateValueRequest())).thenThrow(ClientResourceAccessException.class);
 
         this.mvc.perform(post(calculateValueEndpoint)
+                        .header("api-key", "calculate-value")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mockCalculateValueRequestJson()))
                 .andExpect(status().isInternalServerError());
 
         verify(valuesService, times(1)).sumAndApplyPercentage(mockCalculateValueRequest());
+    }
+
+    @Test
+    void whenMissingApiKeyShouldBeReturnBadRequest() throws Exception {
+        this.mvc.perform(post(calculateValueEndpoint)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mockBadCalculateValueRequestJson()))
+                .andExpect(status().isBadRequest());
+
+        verify(valuesService, times(0)).sumAndApplyPercentage(any());
     }
 }

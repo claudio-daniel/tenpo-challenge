@@ -40,6 +40,7 @@ public class RequestHistoryControllerTest {
         this.mvc.perform(get(requestHistoryEndpoint)
                         .param("size", paramsMock.getSize().toString())
                         .param("page", paramsMock.getPage().toString())
+                        .header("api-key", "request-history")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
 
@@ -54,9 +55,41 @@ public class RequestHistoryControllerTest {
         this.mvc.perform(get(requestHistoryEndpoint)
                         .param("size", paramsMock.getSize().toString())
                         .param("page", paramsMock.getPage().toString())
+                        .header("api-key", "request-history")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError());
 
         verify(requestHistoryService, times(1)).findAllRequestHistory(paramsMock);
+    }
+
+    @Test
+    void whenMessingApiKeyShouldBeReturnBadRequest() throws Exception {
+        this.mvc.perform(get(requestHistoryEndpoint)
+                        .param("size", paramsMock.getSize().toString())
+                        .param("page", paramsMock.getPage().toString())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+
+        verify(requestHistoryService, times(0)).findAllRequestHistory(any());
+    }
+
+    @Test
+    void whenRateLimitIsExceededShouldBeReturnTooManyRequest() throws Exception {
+        for (int i = 0; i <= 10; i++) {
+            this.mvc.perform(get(requestHistoryEndpoint)
+                    .param("size", "1")
+                    .param("page", "1")
+                    .header("api-key", "rate-limit-exceeded")
+                    .contentType(MediaType.APPLICATION_JSON));
+        }
+
+        this.mvc.perform(get(requestHistoryEndpoint)
+                        .param("size", "1")
+                        .param("page", "1")
+                        .header("api-key", "rate-limit-exceeded")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isTooManyRequests());
+
+        verify(requestHistoryService, times(10)).findAllRequestHistory(any());
     }
 }
