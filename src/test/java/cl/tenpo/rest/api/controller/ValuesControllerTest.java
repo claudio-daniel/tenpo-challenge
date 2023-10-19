@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ValuesController.class)
 public class ValuesControllerTest {
 
-    private final String calculateValueEndpoint = "/tenpo/api-rest/values/calculate";
+    private final String calculateValueEndpoint = "/values/calculate";
 
     @MockBean
     private ValuesService valuesService;

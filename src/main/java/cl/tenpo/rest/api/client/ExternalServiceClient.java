@@ -44,7 +44,7 @@ public class ExternalServiceClient {
             try {
                 percentageResponse = Objects.requireNonNull(restTemplate.getForEntity(uri, PercentageResponse.class).getBody());
             } catch (ResourceAccessException resourceAccessException) {
-                var errorMessage = "No response from service client.";
+                var errorMessage = "No response from client service.";
 
                 log.error(errorMessage, resourceAccessException);
                 throw new ClientResourceAccessException(errorMessage);

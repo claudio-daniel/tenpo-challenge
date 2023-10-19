@@ -52,4 +52,15 @@ public class ExceptionControllerAdvice {
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
+
+    @ExceptionHandler({RuntimeException.class})
+    public ResponseEntity<ErrorResponse> handleException(RuntimeException exception, WebRequest request) {
+        var error = ErrorResponse.builder()
+                .reason(exception.getMessage())
+                .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.toString())
+                .timestamp(ZonedDateTime.now().toString())
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
 }
