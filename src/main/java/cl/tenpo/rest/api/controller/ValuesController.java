@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("tenpo/api-rest/values")
+@RequestMapping("/values")
 @Tag(name = "Values", description = "Obtain result of numerical operations")
 public class ValuesController {
 
