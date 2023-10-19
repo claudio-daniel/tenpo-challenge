@@ -2,7 +2,7 @@ version: '2'
 
 services:
   app:
-    image: 'tenpo-challenge:latest'
+    image: 'claudiocarrizo93/tenpo-challenge-cdcarrizo:latest'
     build:
       context: .
     container_name: app
@@ -31,7 +31,7 @@ services:
       - '9009:9009'
 
   percentage-ms:
-    image: 'percentage-ms:latest'
+    image: 'claudiocarrizo93/percentage-ms:latest'
     build:
       context: .
     container_name: percentage-ms

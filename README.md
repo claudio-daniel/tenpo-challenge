@@ -7,7 +7,6 @@
 3. [Setup Local](#Setup Local)
 4. [Documentación](#Documentación)
 
-
 ## Breve Descripción
 Microservicio desarollado con Java 21 y Spring Boot 3 que utiliza maven como gestor de dependencias.
 
@@ -68,11 +67,9 @@ mvn spring-boot:run -Dspring-boot.run.arguments=--spring.datasource.url=jdbc:pos
 
 Como requisito previo se requiere la instalación de [docker](https://docs.docker.com/install/).
 
-Luego para iniciar con Docker, solo basta con ejecutar los siguientes comandos desde la raíz del proyecto:
+Luego para iniciar con Docker, solo basta con ejecutar el siguiente comandos desde la raíz del proyecto:
 
 ```bash
-    mvn clean install 
-    docker build -t tenpo-challenge .
     docker-compose up  
 ```
 Asegurarse que las imagenes de docker se descarguen de forma exitosa
