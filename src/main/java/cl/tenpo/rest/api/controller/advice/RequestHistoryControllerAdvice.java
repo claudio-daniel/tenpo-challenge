@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import java.time.ZonedDateTime;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @ControllerAdvice
@@ -52,6 +53,7 @@ public class RequestHistoryControllerAdvice implements ResponseBodyAdvice<Object
 
             var request = ((ServletServerHttpRequest) httpServletRequest).getServletRequest();
             var response = ((ServletServerHttpResponse) httpServletResponse).getServletResponse();
+            var responseBodyString = Objects.nonNull(responseBody) ? responseBody.toString() : "";
 
             if (HttpStatus.valueOf(response.getStatus()).is2xxSuccessful()) {
                 var requestHistory = RequestHistory.builder()
@@ -59,7 +61,7 @@ public class RequestHistoryControllerAdvice implements ResponseBodyAdvice<Object
                         .url(request.getRequestURI())
                         .httpMethod(request.getMethod())
                         .responseStatus(response.getStatus())
-                        .responseBody(responseBody.toString())
+                        .responseBody(responseBodyString)
                         .timestamp(ZonedDateTime.now())
                         .build();
 

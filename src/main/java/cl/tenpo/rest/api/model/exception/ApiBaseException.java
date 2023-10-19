@@ -1,9 +1,9 @@
 package cl.tenpo.rest.api.model.exception;
 
-public abstract class ClientException extends RuntimeException {
+public abstract class ApiBaseException extends RuntimeException {
     private final ErrorDetail apiError;
 
-    public ClientException(String message, ErrorDetail apiError) {
+    public ApiBaseException(String message, ErrorDetail apiError) {
         super(message);
         this.apiError = apiError;
     }
